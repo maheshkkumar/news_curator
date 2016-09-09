@@ -1,7 +1,4 @@
 News Aggregating Platform
 
-1. Top Stories
+1. Top News
 2. Top Trending News
-3. Top Individual News
-3. News about Technologies
-4. Domain based news
