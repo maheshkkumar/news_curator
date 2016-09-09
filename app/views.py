@@ -15,6 +15,19 @@ import re
 
 mod = Blueprint('users', __name__)
 
+# Finding the categories count
+def article_categories():
+    articles = app.config['ARTICLES_COLLECTION'].find()
+    print "Articles = {}".format(articles.count())
+    categories = {}
+    for article in articles:
+        # print article
+        if article["category"] not in categories:
+            categories[article["category"].encode("utf-8")] = 1
+        else:
+            categories[article["category"].encode("utf-8")] +=1
+    return categories
+
 # Dividing the articles dictionary into chunks
 def chunks(l, n):
     n = max(1, n)
@@ -118,39 +131,44 @@ def signup():
 # Method to Submit a latest news article
 @app.route('/submit_article', methods=['POST', 'GET'])
 def submit_article():
-    form = UploadForm()
-    if request.method == 'POST' and form.validate_on_submit():
-        if validators.url(form.link.data):
-            ts = time.time()
-            data = {
-                "_id": form.link.data,
-                "description": form.description.data,
-                "category": form.category.data,
-                "user": current_user.username,
-                "createdAt":  datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-            }
+    if current_user.is_authenticated():
+        form = UploadForm()
+        if request.method == 'POST' and form.validate_on_submit():
+            if validators.url(form.link.data):
+                ts = time.time()
+                data = {
+                    "_id": form.link.data,
+                    "description": form.description.data,
+                    "category": form.category.data,
+                    "user": current_user.username,
+                    "createdAt":  datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+                }
 
-            try:
-                current_score = app.config['USERS_COLLECTION'].find_one({"_id": current_user.username})
-                if((app.config['NEWS_COLLECTION'].insert(data)) and app.config['USERS_COLLECTION'].update({"_id": current_user.username}, 
-                                                                    {"$set": {"user_score": int(current_score["user_score"])+1}})):
-                    flash("Link added successfully", category="success")
-                    return redirect(request.args.get("latest") or url_for("latest"))
+                try:
+                    current_score = app.config['USERS_COLLECTION'].find_one({"_id": current_user.username})
+                    if((app.config['NEWS_COLLECTION'].insert(data)) and app.config['USERS_COLLECTION'].update({"_id": current_user.username}, 
+                                                                        {"$set": {"user_score": int(current_score["user_score"])+1}})):
+                        flash("Link added successfully", category="success")
+                        return redirect(request.args.get("latest") or url_for("latest"))
 
-            except DuplicateKeyError:
-                flash("Article link already exists in the Database", category="error")
+                except DuplicateKeyError:
+                    flash("Article link already exists in the Database", category="error")
+                    return render_template("submit_article.html", form=form)
+            else:
+                flash("Not a valid link", category="error")
                 return render_template("submit_article.html", form=form)
-        else:
-            flash("Not a valid link", category="error")
-            return render_template("submit_article.html", form=form)
 
-    return render_template('submit_article.html', title='Submit Article', form=form)
+        return render_template('submit_article.html', title='Submit Article', form=form)
+    else:
+        flash("Login to submit a link", category="error")
+        return redirect(request.args.get("login") or url_for("login"))
 
 # List of all the categories
 @app.route('/category')
 def total_categories():
     categories_chunks = chunks(CATEGORIES, 3)
-    return render_template('total_categories.html', categories_chunks=categories_chunks, categories=CATEGORIES)
+    categories_count = article_categories()
+    return render_template('total_categories.html', categories_chunks=categories_chunks, categories=CATEGORIES, categories_count=categories_count)
 
 # Details of a specific category
 @app.route('/category/<string:category_type>')
@@ -163,10 +181,11 @@ def category_selection(category_type):
             sort = [("createdAt", -1)]
             query_result = app.config['ARTICLES_COLLECTION'].find({"category": article_category[0]}).sort(sort)
             articles = query_result.skip(offset).limit(per_page)
+            articles_length = articles.count() if articles else 0
             pagination = get_pagination(page=page, per_page=per_page, total=total, 
                                     record_name=articles)
             return render_template('category.html', articles=articles, page=page,
-                            per_page=per_page, pagination=pagination, category_type=category_type)
+                            per_page=per_page, pagination=pagination, category_type=category_type, articles_length=articles_length)
         except ValueError:        
             total = 0
             return render_template('category.html', total=total)
@@ -193,10 +212,11 @@ def latest():
         sort = [("createdAt", -1)]
         query_result = app.config['NEWS_COLLECTION'].find().sort(sort)
         articles = query_result.skip(offset).limit(per_page)
+        articles_length = articles.count() if articles else 0
         pagination = get_pagination(page=page, per_page=per_page, total=total, 
                                 record_name=articles)
         return render_template('latest.html', articles=articles, page=page,
-                            per_page=per_page, pagination=pagination)
+                            per_page=per_page, pagination=pagination, articles_length=articles_length)
     except ValueError:        
         total = 0
         return render_template('latest.html', total=total)
@@ -210,10 +230,11 @@ def trending():
         sort = [("createdAt", -1)]
         query_result = app.config['ARTICLES_COLLECTION'].find().sort(sort)
         articles = query_result.skip(offset).limit(per_page)
+        articles_length = articles.count() if articles else 0
         pagination = get_pagination(page=page, per_page=per_page, total=total, 
                                 record_name=articles)
         return render_template('trending.html', articles=articles, page=page,
-                                per_page=per_page, pagination=pagination)
+                                per_page=per_page, pagination=pagination, articles_length=articles_length)
     except ValueError:        
         total = 0
         return render_template('trending.html', total=total)
@@ -343,9 +364,8 @@ def username_length_modifier(username):
 # template_filter to find the article category, where the catgory is a tuple
 @app.template_filter()
 def find_article_category(article_type):
-    category =  [item[1] for item in CATEGORIES if item[0] == article_type]
-    return category[0]
-
+    category =  [item for item in CATEGORIES if item[0] == article_type]
+    return category
 
 # Method to load users credentials
 @lm.user_loader

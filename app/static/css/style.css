@@ -1,6 +1,8 @@
 /* Body UI */
 body{
-    font-family: 'Montserrat', sans-serif;   
+    /*font-family: 'Roboto', sans-serif;*/
+    /*font-family: 'Merriweather Sans', sans-serif;*/
+    font-family: 'Montserrat', sans-serif;
 }
 
 /* Footer UI */
@@ -22,6 +24,21 @@ body {
     height: 100%;
 }
 
+/* User Like and Recommend */
+#user-like-recommend{
+    font-size: 10pt;
+}
+
+/* Category Count Zero Text */
+#category-count-zero{
+    text-align: center;
+}
+
+/* Jumbotron Content UI */
+#jumbotron-data a{
+    text-align: center;
+}
+
 /* Set the fixed height of the footer here */
 #footer {
     background-color: #16a085;
@@ -31,10 +48,10 @@ body {
 
 #footer-note{
     color: #FFFFFF;
-    text-align: center;
     font-size: 10pt;
-    margin-bottom: 3%
-    margin-top: 1%
+    margin-right: 4%;
+    margin-bottom: 1%;
+    text-align: center;
 }
 
 .glyphicon-heart{

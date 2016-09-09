@@ -4,8 +4,17 @@
 		<div class="col-md-12">
 		{% for category in category_chunk %}
 			<div id="total_categories" class="col-md-4">
-				<a href="{{ url_for('category_selection', category_type=category[1]) }}"><h5>{{category[1]}}</h5></a>
-			</div>
+				<div class="jumbotron">
+					<p id="jumbotron-data">
+						<a href="{{ url_for('category_selection', category_type=category[1]) }}"><h5>{{category[1]}}</ h5></a>
+						{% if category[0] in categories_count %}
+							<h6>Total Count: {{ categories_count[category[0]] }}</h6>
+						{% else %}
+							<h6>Total Count: 0</h6>
+						{% endif %}
+					</p>
+				</div>
+			</div>	
 		{% endfor %}
 		</div>
 	{% endfor %}
