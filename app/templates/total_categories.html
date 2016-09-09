@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+	{% for category_chunk in categories_chunks %}
+		<div class="col-md-12">
+		{% for category in category_chunk %}
+			<div id="total_categories" class="col-md-4">
+				<a href="{{ url_for('category_selection', category_type=category[1]) }}"><h5>{{category[1]}}</h5></a>
+			</div>
+		{% endfor %}
+		</div>
+	{% endfor %}
+{% endblock %}

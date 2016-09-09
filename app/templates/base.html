@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        
+        {% if title %}
+            <title>{{ title }}</title>
+        {% else %}
+            <title>News Aggregating Platform</title>
+        {% endif %}
+        
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <!-- Bootstrap -->
+        <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='css/bootstrap.min.css') }}">
+        <!-- Google Font  -->
+        <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+        <!-- Custom Cascading Style Sheet -->
+        <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='css/style.css') }}">
+        
+        <!-- JQuery and Bootstrap JS -->
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+        
+        {% block head %}{% endblock %}
+
+    </head>
+    
+    <body>
+
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="{{ url_for('trending')}}">News Aggregating Platform</a>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        {% if current_user.is_authenticated() %}
+                            <li><a href="{{ url_for('total_categories') }}">Categories</a></li>
+                            <li><a href="{{ url_for('latest') }}">Latest</a></li>
+                            <li><a href="{{ url_for('submit_article') }}">Upload</a></li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ current_user.username|username_length_modifier }} <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li><a href="{{ url_for('total_categories') }}">Categories</a></li>
+                            <li><a href="{{ url_for('latest') }}">Latest</a></li>
+                            <li><a href="{{ url_for('login') }}">Login</a></li>
+                            <li><a href="{{ url_for('signup') }}">Sign Up</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+       
+        <div class="container" id="media-block">
+            {% include "flash.html" %}
+            {% block content %}{% endblock %}
+        </div>
+
+        <header class="page-row" id="footer">
+            <div class="header-inner">
+                <h3 id="footer-note">Crafted with <span class="glyphicon glyphicon-heart" aria-hidden="true"></span> in Bengaluru!</h3>
+            </div>
+        </header>
+    </body>
+
+</html>

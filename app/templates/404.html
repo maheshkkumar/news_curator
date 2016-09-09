@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+	<br>
+	<br>
+	{% block body %}
+		<div class="col-md-3"></div>
+		<div class="col-md-7">
+			<!-- {% block title %}Page Not Found{% endblock %} -->
+		  	<h1>You weren't supposed to see this!</h1>
+		  	<h4 id="error-font"><a href="{{ url_for('trending') }}">Click here to go back to your world.</a></h4>
+			<img id="error-gif" src="{{ url_for('static', filename = 'media/404.gif') }}" width="90%" height="90%" alt="previous" class="img-fluid">
+		</div>
+		<div class="col-md-2"></div>
+	{% endblock %}
+{% endblock %}
