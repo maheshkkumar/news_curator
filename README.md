@@ -1,4 +1,4 @@
-News Aggregating Platform
+News Aggregating Platform :open_file_folder:
 
-1. Top News
-2. Top Trending News
+1. Top News :tophat:
+2. Top Trending News :fire:
