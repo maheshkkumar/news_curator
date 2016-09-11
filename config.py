@@ -42,7 +42,7 @@ CATEGORIES = [
                     ("SW", "Software Product"),
                     ("TUTS", "Tutorial"),
                     ("TWEET", "Twitter"),
-                    ("WAR", "War"),
+                    ("WAR", "Versus"),
                     ("WS", "Web Scraping")
                 ]
 

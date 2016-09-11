@@ -35,9 +35,16 @@ body {
 }
 
 /* Jumbotron Content UI */
-#jumbotron-data a{
+.jumbotron{
     text-align: center;
 }
+
+.jumbotron a{
+    font-size: 15pt;
+    text-align: center;
+}
+
+
 
 /* Set the fixed height of the footer here */
 #footer {

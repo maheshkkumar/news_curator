@@ -5,7 +5,7 @@
 		{% for category in category_chunk %}
 			<div id="total_categories" class="col-md-4">
 				<div class="jumbotron">
-					<p id="jumbotron-data">
+					<p>
 						<a href="{{ url_for('category_selection', category_type=category[1]) }}"><h5>{{category[1]}}</ h5></a>
 						{% if category[0] in categories_count %}
 							<h6>Total Count: {{ categories_count[category[0]] }}</h6>
