@@ -18,7 +18,7 @@ CATEGORIES = [
                     ("CAREER", "Career Related"),
                     ("COG", "Cognitive Science"),
                     ("CONF", "Conference"),
-                    ("COMP", "Competition / Challenge"),
+                    ("COMP", "Competitions"),
                     ("CV", "Computer Vision"),
                     ("DATA", "Dataset"),
                     ("DS", "Data Science"), 

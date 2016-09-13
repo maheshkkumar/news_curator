@@ -108,7 +108,9 @@ def signup():
                 user_data = {
                     "_id": form.username.data, 
                     "password": password_hash, 
-                    "user_score": 0  
+                    "user_score": 0, 
+                    "likes": [],
+                    "recommend": []   
                 }
                 bool_insert = app.config['USERS_COLLECTION'].insert(user_data)
                 if bool_insert:
@@ -322,7 +324,6 @@ def change_password():
     except OperationFailure:
         flash("Unfortunately, your operation failed, try doing it again", category='error')    
         return render_template('profile.html', user=user, form=form)
-
 
 # Flask filter method which can be called from the Jinja template
 # template_file to format the time for the articles
