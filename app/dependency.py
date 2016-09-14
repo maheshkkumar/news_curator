@@ -60,3 +60,25 @@ def get_link_size():
 # Method to choose single page output or multi page output
 def show_single_page_or_not():
     return current_app.config.get('SHOW_SINGLE_PAGE', False)
+
+# Method to get articles length and articles 
+def articles_stat(collection):
+    page, per_page, offset = get_page_items()
+    sort = [("createdAt", -1)]
+    query_result = app.config[collection].find().sort(sort)
+    articles = query_result.skip(offset).limit(per_page)
+    articles_length = articles.count() if articles else 0
+    return articles, articles_length, page, per_page, offset
+        
+# Method to get count of articles
+def get_count(collection):
+    return app.config[collection].find().count()
+
+# Method to get custom query results
+def get_articles(collection, condition_key, condition_value):
+    page, per_page, offset = get_page_items()
+    sort = [("createdAt", -1)]
+    query_result = app.config[collection].find({condition_key: condition_value}).sort(sort)
+    articles = query_result.skip(offset).limit(per_page)
+    articles_length = articles.count() if articles else 0
+    return articles, articles_length, page, per_page, offset

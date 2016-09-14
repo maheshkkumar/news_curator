@@ -12,7 +12,8 @@ import datetime
 import time
 import validators
 import re
-from dependency import get_pagination, get_page_items, chunks, article_categories, pularize, get_css_framework
+from dependency import get_pagination, get_page_items, chunks, article_categories
+from dependency import pularize, get_css_framework, get_count, articles_stat, get_articles
 
 # Method to Submit a latest news article
 @app.route('/submit_article', methods=['POST', 'GET'])
@@ -62,12 +63,11 @@ def category_selection(category_type):
     article_category = [item[0] for item in CATEGORIES if item[1] == category_type]
     if len(article_category) > 0:
         total = app.config['ARTICLES_COLLECTION'].find({"category": article_category[0]}).count()
-        page, per_page, offset = get_page_items()
+        collection = 'ARTICLES_COLLECTION'
+        condition_key = "category" 
+        condition_value = article_category[0]
         try:
-            sort = [("createdAt", -1)]
-            query_result = app.config['ARTICLES_COLLECTION'].find({"category": article_category[0]}).sort(sort)
-            articles = query_result.skip(offset).limit(per_page)
-            articles_length = articles.count() if articles else 0
+            articles, article_length, page, per_page, offset = get_articles(collection, condition_key, condition_value)
             pagination = get_pagination(page=page, per_page=per_page, total=total, 
                                     record_name=articles)
             return render_template('category.html', articles=articles, page=page,
@@ -81,13 +81,10 @@ def category_selection(category_type):
 # Method for Latest News/Recent News
 @app.route('/latest', methods=['GET'])
 def latest():
-    total = app.config['NEWS_COLLECTION'].find().count()
-    page, per_page, offset = get_page_items()
+    collection = 'NEWS_COLLECTION'
     try:
-        sort = [("createdAt", -1)]
-        query_result = app.config['NEWS_COLLECTION'].find().sort(sort)
-        articles = query_result.skip(offset).limit(per_page)
-        articles_length = articles.count() if articles else 0
+        total = get_count(collection)
+        articles, articles_length, page, per_page, offset = articles_stat(collection)
         pagination = get_pagination(page=page, per_page=per_page, total=total, 
                                 record_name=articles)
         return render_template('latest.html', articles=articles, page=page,
@@ -99,13 +96,10 @@ def latest():
 # Top Stories or top trending stories
 @app.route('/trending', methods=['GET'])
 def trending():
-    total = app.config['ARTICLES_COLLECTION'].find().count()
-    page, per_page, offset = get_page_items()
+    collection = 'ARTICLES_COLLECTION'
     try:
-        sort = [("createdAt", -1)]
-        query_result = app.config['ARTICLES_COLLECTION'].find().sort(sort)
-        articles = query_result.skip(offset).limit(per_page)
-        articles_length = articles.count() if articles else 0
+        total = get_count(collection)
+        articles, articles_length, page, per_page, offset = articles_stat(collection)
         pagination = get_pagination(page=page, per_page=per_page, total=total, 
                                 record_name=articles)
         return render_template('trending.html', articles=articles, page=page,
