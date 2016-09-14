@@ -138,7 +138,7 @@ def change_password():
                         bool_insert = app.config['USERS_COLLECTION'].update({"_id": current_user.username}, { "$set": {"password": password_hash}})     
                         if bool_insert:
                             flash("Password was changed successfully!", category='success')
-                            return redirect(request.args.get("article.trending") or url_for("article.trending"))                       
+                            return redirect(request.args.get("trending") or url_for("trending"))                       
                         else:    
                             flash("Password was not changed!", category='error')
                             return render_template('change_password.html', user=user, form=form)
