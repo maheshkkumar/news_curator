@@ -1,5 +1,5 @@
 from app import app, lm
-from flask import request, redirect, render_template, url_for, flash, g, current_app
+from flask import request, redirect, render_template, url_for, flash, current_app
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from flask.ext.paginate import Pagination
 

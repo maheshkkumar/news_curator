@@ -1,19 +1,17 @@
 from app import app, lm
-from flask import request, redirect, render_template, url_for, flash, g, current_app
-from flask.ext.login import login_user, logout_user, login_required, current_user
-from flask import Blueprint
+from flask import request, redirect, render_template, url_for, flash
+from flask.ext.login import current_user
 from flask.ext.paginate import Pagination
-from .forms import LoginForm, UploadForm, UserProfileForm, UserChangePassword
+from .forms import UploadForm
 from .user import User
-from werkzeug.security import generate_password_hash, check_password_hash
 from pymongo.errors import DuplicateKeyError, CursorNotFound, ExecutionTimeout, OperationFailure
 from config import CATEGORIES
 import datetime
 import time
 import validators
-import re
-from dependency import get_pagination, get_page_items, chunks, article_categories
-from dependency import pularize, get_css_framework, get_count, articles_stat, get_articles
+from dependency import get_pagination, chunks, article_categories
+from dependency import get_count, articles_stat, get_articles
+import json
 
 # Method to Submit a latest news article
 @app.route('/submit_article', methods=['POST', 'GET'])
@@ -67,7 +65,7 @@ def category_selection(category_type):
         condition_key = "category" 
         condition_value = article_category[0]
         try:
-            articles, article_length, page, per_page, offset = get_articles(collection, condition_key, condition_value)
+            articles, articles_length, page, per_page, offset = get_articles(collection, condition_key, condition_value)
             pagination = get_pagination(page=page, per_page=per_page, total=total, 
                                     record_name=articles)
             return render_template('category.html', articles=articles, page=page,
@@ -100,11 +98,48 @@ def trending():
     try:
         total = get_count(collection)
         articles, articles_length, page, per_page, offset = articles_stat(collection)
+        likes = app.config['USERS_COLLECTION'].find_one({"_id": current_user.username})["likes"]
         pagination = get_pagination(page=page, per_page=per_page, total=total, 
                                 record_name=articles)
         return render_template('trending.html', articles=articles, page=page,
-                                per_page=per_page, pagination=pagination, articles_length=articles_length)
+                                per_page=per_page, pagination=pagination, articles_length=articles_length, likes=likes)
     except ValueError:        
         total = 0
         return render_template('trending.html', total=total)
 
+# User Liked article
+@app.route('/article_liked', methods=['POST'])
+def article_liked():
+    if current_user.is_authenticated():
+        if request.method == "POST":
+            article_list = request.get_json()
+            article = article_list["article"]
+            user = current_user.username
+            likes = app.config['USERS_COLLECTION'].find_one({'_id': user})["likes"]
+            if article in likes:
+                return json.dumps({"status": 'Already exists'})
+            else:
+                likes.append(article)
+                app.config['USERS_COLLECTION'].update({"_id": user}, {"$set": {"likes": likes}})
+                return json.dumps({'status':'OK'});
+    else:
+        flash("Login to submit a link", category="error")
+        return redirect(request.args.get("login") or url_for("login"))
+
+# User Unliked article
+@app.route('/article_unliked', methods=['POST'])
+def article_unliked():
+    if current_user.is_authenticated():
+        if request.method == "POST":
+            article_list = request.get_json()
+            article = article_list["article"]
+            user = current_user.username
+            likes = app.config['USERS_COLLECTION'].find_one({'_id': user})["likes"]
+            if article in likes:
+                app.config['USERS_COLLECTION'].update({"_id": user}, {"$pull": {"likes": article}})
+                return json.dumps({"status": 'Successfully removed'})
+            else:
+                return json.dumps({'status':'Article not in the list'});
+    else:
+        flash("Login to submit a link", category="error")
+        return redirect(request.args.get("login") or url_for("login"))

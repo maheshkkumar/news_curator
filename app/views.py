@@ -1,5 +1,5 @@
 from app import app, lm
-from flask import request, redirect, render_template, url_for, flash, g, current_app
+from flask import request, redirect, render_template, url_for, flash, current_app
 from flask.ext.login import login_user, logout_user, login_required, current_user
 from flask import Blueprint
 from flask.ext.paginate import Pagination
@@ -12,7 +12,7 @@ import datetime
 import time
 import validators
 import re
-from dependency import get_pagination, get_page_items, chunks, article_categories, pularize, get_css_framework
+from dependency import pularize
 
 # Root Path
 @app.route('/')

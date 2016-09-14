@@ -5,6 +5,16 @@ body{
     font-family: 'Montserrat', sans-serif;
 }
 
+/* Table article row*/
+#article-row button{
+    border: none;
+    background-color: transparent;
+}
+
+#unlike-button span{
+    color: red;
+}
+
 /* Footer UI */
 
 html,

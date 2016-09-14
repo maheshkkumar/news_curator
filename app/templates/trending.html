@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
 	<div id="articles-table">
+		<div id="recordStatus"></div>
 		<h3 id="article-title">{{category_type}}</h3>
 		{% if articles_length > 0 %}
 			<table class='table borderless'>
 				{% set counter = 1 %}
 				{% for article in articles %}
+					<tr id="article-row">
 						<td id="table-index">{{ counter + (page-1) * per_page }}</td>
 						<td>
 							<a href="{{article._id}}">
@@ -22,7 +24,13 @@
 								<a id="category-type" href="{{ url_for('category_selection', category_type=category_value[0][1]) }}">{{ category_value[0][1] }}</a>
 							</span>
 							<br>
-							<a href="#"><span id="user-like-recommend" class="glyphicon glyphicon-heart-empty" aria-hidden="true"></span></a>
+							{% if current_user.is_authenticated() %}
+								{% if article._id in likes %}
+									<button data-toggle="tooltip" title="Unlike" id="unlike-button" value="{{article._id}}"><span id="user-like-recommend" class="glyphicon glyphicon-heart" aria-hidden="true"></span></button>
+								{% else %}
+									<button data-toggle="tooltip" title="Like" id="like-button" value="{{article._id}}"><span id="user-like-recommend" class="glyphicon glyphicon-heart-empty" aria-hidden="true"></span></button>
+								{% endif %}
+							{% endif %}
 						</td>
 					</tr>
 					{% set counter = counter + 1 %}

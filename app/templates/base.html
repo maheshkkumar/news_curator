@@ -27,10 +27,8 @@
         <!-- JQuery and Bootstrap JS -->
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-        <script type=text/javascript>
-            $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-        </script>
-        
+        <script type="text/javascript" src="{{ url_for('static', filename='js/article.js') }}"></script>
+                
         {% block head %}{% endblock %}
 
     </head>
