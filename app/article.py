@@ -68,8 +68,13 @@ def category_selection(category_type):
             articles, articles_length, page, per_page, offset = get_articles(collection, condition_key, condition_value)
             pagination = get_pagination(page=page, per_page=per_page, total=total, 
                                     record_name=articles)
-            return render_template('category.html', articles=articles, page=page,
-                            per_page=per_page, pagination=pagination, category_type=category_type, articles_length=articles_length)
+            if current_user.is_authenticated():
+                likes = app.config['USERS_COLLECTION'].find_one({"_id": current_user.username})["likes"]
+                return render_template('trending.html', articles=articles, page=page,
+                                per_page=per_page, pagination=pagination, articles_length=articles_length, likes=likes)
+            else:
+                return render_template('trending.html', articles=articles, page=page,
+                                per_page=per_page, pagination=pagination, articles_length=articles_length)
         except ValueError:        
             total = 0
             return render_template('category.html', total=total)
@@ -85,8 +90,16 @@ def latest():
         articles, articles_length, page, per_page, offset = articles_stat(collection)
         pagination = get_pagination(page=page, per_page=per_page, total=total, 
                                 record_name=articles)
-        return render_template('latest.html', articles=articles, page=page,
-                            per_page=per_page, pagination=pagination, articles_length=articles_length)
+        if current_user.is_authenticated():
+            likes = app.config['USERS_COLLECTION'].find_one({"_id": current_user.username})["likes"]
+            return render_template('trending.html', articles=articles, page=page,
+                                per_page=per_page, pagination=pagination, articles_length=articles_length, likes=likes)
+        else:
+            return render_template('trending.html', articles=articles, page=page,
+                                per_page=per_page, pagination=pagination, articles_length=articles_length)
+    except ValueError:        
+        total = 0
+        return render_template('trending.html', total=total)
     except ValueError:        
         total = 0
         return render_template('latest.html', total=total)
@@ -98,11 +111,15 @@ def trending():
     try:
         total = get_count(collection)
         articles, articles_length, page, per_page, offset = articles_stat(collection)
-        likes = app.config['USERS_COLLECTION'].find_one({"_id": current_user.username})["likes"]
         pagination = get_pagination(page=page, per_page=per_page, total=total, 
                                 record_name=articles)
-        return render_template('trending.html', articles=articles, page=page,
+        if current_user.is_authenticated():
+            likes = app.config['USERS_COLLECTION'].find_one({"_id": current_user.username})["likes"]
+            return render_template('trending.html', articles=articles, page=page,
                                 per_page=per_page, pagination=pagination, articles_length=articles_length, likes=likes)
+        else:
+            return render_template('trending.html', articles=articles, page=page,
+                                per_page=per_page, pagination=pagination, articles_length=articles_length)
     except ValueError:        
         total = 0
         return render_template('trending.html', total=total)

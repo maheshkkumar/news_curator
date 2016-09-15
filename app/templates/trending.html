@@ -26,10 +26,10 @@
 							<br>
 							{% if current_user.is_authenticated() %}
 								{% if article._id in likes %}
-									<button data-toggle="tooltip" title="Unlike" id="unlike-button" value="{{article._id}}"><span id="user-like-recommend" class="glyphicon glyphicon-heart" aria-hidden="true"></span></button>
-								{% else %}
-									<button data-toggle="tooltip" title="Like" id="like-button" value="{{article._id}}"><span id="user-like-recommend" class="glyphicon glyphicon-heart-empty" aria-hidden="true"></span></button>
-								{% endif %}
+							    	<button data-toggle="tooltip" title="Unlike" class="unlike-button" value="{{article._id}}"><span id="user-like-recommend" class="glyphicon glyphicon-heart" aria-hidden="true"></span></button>
+							  	{% else %}
+							    	<button data-toggle="tooltip" title="Like" class="like-button" value="{{article._id}}"><span id="user-like-recommend" class="glyphicon glyphicon-heart-empty" aria-hidden="true"></span></button>
+							  	{% endif %}
 							{% endif %}
 						</td>
 					</tr>

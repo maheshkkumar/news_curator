@@ -34,7 +34,7 @@ def get_page_items():
     page = int(request.args.get('page', 1))
     per_page = request.args.get('per_page')
     if not per_page:
-        per_page = current_app.config.get('PER_PAGE', 20)
+        per_page = current_app.config.get('PER_PAGE', 10)
     else:
         per_page = int(per_page)
     offset = (page - 1) * per_page

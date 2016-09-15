@@ -1,8 +1,8 @@
 $(function(){
-  document.getElementById("like-button").addEventListener("click", function(e) {
-  // $('#like-button').click(function(e){
+  // document.getElementById("like-button").addEventListener("click", function(e) {
+  $(".like-button").on("click", function(e)    {
     e.preventDefault();
-    var article = $('#like-button').val();
+    var article = $(this).val();
     var data = {"article": article};
     console.log(data);
     if(data){
@@ -15,6 +15,7 @@ $(function(){
         success: function (response) {
           success("Article was successfully liked.");
         }
+
 
       }).fail(function(response, exception){
         console.log("Action failed");
@@ -54,10 +55,10 @@ $(function(){
 
   // Unlike button
 
-  document.getElementById("unlike-button").addEventListener("click", function(e) {
-  // $('#unlike-button').click(function(e){
+  // document.getElementById("unlike-button").addEventListener("click", function(e) {
+  $(".unlike-button").on("click", function(e)    {
     e.preventDefault();
-    var article = $('#unlike-button').val();
+    var article = $(this).val();
     var data = {"article": article};
     console.log(data);
     if(data){
