@@ -138,6 +138,13 @@ def article_liked():
             else:
                 likes.append(article)
                 app.config['USERS_COLLECTION'].update({"_id": user}, {"$set": {"likes": likes}})
+                ts = time.time()
+                data = {
+                    "url": article,
+                    "user": current_user.username,
+                    "createdAt":  datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+                }
+                app.config['LIKES_COLLECTION'].insert(data)
                 return json.dumps({'status':'OK'});
     else:
         flash("Login to submit a link", category="error")
@@ -154,6 +161,7 @@ def article_unliked():
             likes = app.config['USERS_COLLECTION'].find_one({'_id': user})["likes"]
             if article in likes:
                 app.config['USERS_COLLECTION'].update({"_id": user}, {"$pull": {"likes": article}})
+                app.config['LIKES_COLLECTION'].remove({"user": user, "url": article})
                 return json.dumps({"status": 'Successfully removed'})
             else:
                 return json.dumps({'status':'Article not in the list'});

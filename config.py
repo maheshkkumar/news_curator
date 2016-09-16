@@ -8,6 +8,7 @@ DATABASE = MongoClient()[DB_NAME]
 NEWS_COLLECTION = DATABASE.news
 ARTICLES_COLLECTION = DATABASE.articles
 USERS_COLLECTION = DATABASE.users
+LIKES_COLLECTION = DATABASE.likes
 
 CATEGORIES = [  
                     ("AI","Artificial Intelligence"),
