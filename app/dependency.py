@@ -62,9 +62,9 @@ def show_single_page_or_not():
     return current_app.config.get('SHOW_SINGLE_PAGE', False)
 
 # Method to get articles length and articles 
-def articles_stat(collection):
+def articles_stat(collection, sortby):
     page, per_page, offset = get_page_items()
-    sort = [("createdAt", -1)]
+    sort = [(sortby, -1)]
     query_result = app.config[collection].find().sort(sort)
     articles = query_result.skip(offset).limit(per_page)
     articles_length = articles.count() if articles else 0

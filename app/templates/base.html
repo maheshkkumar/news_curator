@@ -54,7 +54,8 @@
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ current_user.username|username_length_modifier }} <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                                    <li><a href="{{ url_for('profile', username=current_user.username) }}">Profile</a></li>
+                                    <li><a href="{{ url_for('user_liked_articles', username=current_user.username) }}">Likes</a></li>
                                     <li><a href="{{ url_for('logout') }}">Logout</a></li>
                                 </ul>
                             </li>

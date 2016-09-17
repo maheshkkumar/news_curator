@@ -84,43 +84,46 @@ def logout():
     return redirect(url_for('login'))
 
 # User profile 
-@app.route('/profile', methods=['POST', 'GET'])
-def profile():
-    login_required
-    form = UserProfileForm(request.form)
-    user = app.config['USERS_COLLECTION'].find_one({"_id": current_user.username})
-    try:
-        if request.method == 'POST' and form.validate_on_submit:
-            if form.email.data:
-                user_data = app.config['USERS_COLLECTION'].find_one({"_id": current_user.username})
-                match = re.search(r'[\w.-]+@[\w.-]+.\w+', form.email.data)
-                if match:
-                    bool_insert = app.config['USERS_COLLECTION'].update({ "_id": current_user.username },{ "$set": {"email": form.email.data }})     
-                    if bool_insert:
-                        flash("Email was updated!", category='success')
-                        return redirect(request.args.get("profile") or url_for("profile"))                       
-                    else:    
-                        flash("Email was not updated!", category='error')
+@app.route('/<string:username>/profile', methods=['POST', 'GET'])
+def profile(username):
+    if current_user.username == username:
+        form = UserProfileForm(request.form)
+        user = app.config['USERS_COLLECTION'].find_one({"_id": username})
+        try:
+            if request.method == 'POST' and form.validate_on_submit:
+                if form.email.data:
+                    user_data = app.config['USERS_COLLECTION'].find_one({"_id": username})
+                    match = re.search(r'[\w.-]+@[\w.-]+.\w+', form.email.data)
+                    if match:
+                        bool_insert = app.config['USERS_COLLECTION'].update({ "_id": username },{ "$set": {"email": form.email.data }})     
+                        if bool_insert:
+                            flash("Email was updated!", category='success')
+                            return redirect(request.args.get("profile") or url_for("profile", username=current_user.username))                       
+                        else:    
+                            flash("Email was not updated!", category='error')
+                            return render_template('profile.html', user=user, form=form)
+                    else:
+                        flash("Incorrect email!", category='error')
                         return render_template('profile.html', user=user, form=form)
                 else:
-                    flash("Incorrect email!", category='error')
+                    flash("Please, provide an email address", category='error')
                     return render_template('profile.html', user=user, form=form)
             else:
-                flash("Please, provide an email address", category='error')
+                user = app.config['USERS_COLLECTION'].find_one({"_id": username})
                 return render_template('profile.html', user=user, form=form)
-        else:
-            user = app.config['USERS_COLLECTION'].find_one({"_id": current_user.username})
+        
+        except CursorNotFound:
+            flash("Unfortunately, something unexpected occured.", category='error')
             return render_template('profile.html', user=user, form=form)
-    
-    except CursorNotFound:
-        flash("Unfortunately, something unexpected occured.", category='error')
-        return render_template('profile.html', user=user, form=form)
-    except ExecutionTimeout:
-        flash("Unfortunately, something unexpected occured while executing.", category='error')
-        return render_template('profile.html', user=user, form=form)
-    except OperationFailure:
-        flash("Unfortunately, your operation failed, try doing it again", category='error')    
-        return render_template('profile.html', user=user, form=form)
+        except ExecutionTimeout:
+            flash("Unfortunately, something unexpected occured while executing.", category='error')
+            return render_template('profile.html', user=user, form=form)
+        except OperationFailure:
+            flash("Unfortunately, your operation failed, try doing it again", category='error')    
+            return render_template('profile.html', user=user, form=form)
+    else:
+        return render_template('404.html'), 404
+
 
 # Change Password for the users
 @app.route('/change_password', methods=['POST', 'GET'])

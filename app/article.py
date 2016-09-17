@@ -26,6 +26,7 @@ def submit_article():
                     "description": form.description.data,
                     "category": form.category.data,
                     "user": current_user.username,
+                    "score": 0,
                     "createdAt":  datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
                 }
 
@@ -60,8 +61,8 @@ def total_categories():
 def category_selection(category_type):
     article_category = [item[0] for item in CATEGORIES if item[1] == category_type]
     if len(article_category) > 0:
-        total = app.config['ARTICLES_COLLECTION'].find({"category": article_category[0]}).count()
         collection = 'ARTICLES_COLLECTION'
+        total = app.config[collection].find({"category": article_category[0]}).count()
         condition_key = "category" 
         condition_value = article_category[0]
         try:
@@ -69,6 +70,7 @@ def category_selection(category_type):
             pagination = get_pagination(page=page, per_page=per_page, total=total, 
                                     record_name=articles)
             if current_user.is_authenticated():
+                # finding the articles liked by the current user
                 likes = app.config['USERS_COLLECTION'].find_one({"_id": current_user.username})["likes"]
                 return render_template('trending.html', articles=articles, page=page,
                                 per_page=per_page, pagination=pagination, articles_length=articles_length, likes=likes)
@@ -79,15 +81,16 @@ def category_selection(category_type):
             total = 0
             return render_template('category.html', total=total)
     else:
-         return render_template('404.html'), 404
+        return render_template('404.html'), 404
 
 # Method for Latest News/Recent News
 @app.route('/latest', methods=['GET'])
 def latest():
     collection = 'NEWS_COLLECTION'
+    sortby = 'createdAt'
     try:
         total = get_count(collection)
-        articles, articles_length, page, per_page, offset = articles_stat(collection)
+        articles, articles_length, page, per_page, offset = articles_stat(collection, sortby)
         pagination = get_pagination(page=page, per_page=per_page, total=total, 
                                 record_name=articles)
         if current_user.is_authenticated():
@@ -108,9 +111,10 @@ def latest():
 @app.route('/trending', methods=['GET'])
 def trending():
     collection = 'ARTICLES_COLLECTION'
+    sortby = 'score'
     try:
         total = get_count(collection)
-        articles, articles_length, page, per_page, offset = articles_stat(collection)
+        articles, articles_length, page, per_page, offset = articles_stat(collection, sortby)
         pagination = get_pagination(page=page, per_page=per_page, total=total, 
                                 record_name=articles)
         if current_user.is_authenticated():
@@ -138,13 +142,23 @@ def article_liked():
             else:
                 likes.append(article)
                 app.config['USERS_COLLECTION'].update({"_id": user}, {"$set": {"likes": likes}})
+                article_result = get_article_data(article)
+                description = article_result["description"]
+                category = article_result["category"]
+                createdAt = article_result["createdAt"]
                 ts = time.time()
                 data = {
                     "url": article,
                     "user": current_user.username,
+                    "category": category,
+                    "description": description,
                     "createdAt":  datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
                 }
                 app.config['LIKES_COLLECTION'].insert(data)
+                article_like_count = get_article_like_count(article)
+                article_time = calculate_article_time(createdAt)
+                current_article_score = calculate_article_score(article_like_count, article_time)
+                app.config['ARTICLES_COLLECTION'].update({"_id": article}, {"$set": {"score": current_article_score }})
                 return json.dumps({'status':'OK'});
     else:
         flash("Login to submit a link", category="error")
@@ -157,14 +171,63 @@ def article_unliked():
         if request.method == "POST":
             article_list = request.get_json()
             article = article_list["article"]
+            article_result = get_article_data(article)
+            createdAt = calculate_article_time(article_result["createdAt"])
             user = current_user.username
             likes = app.config['USERS_COLLECTION'].find_one({'_id': user})["likes"]
             if article in likes:
                 app.config['USERS_COLLECTION'].update({"_id": user}, {"$pull": {"likes": article}})
                 app.config['LIKES_COLLECTION'].remove({"user": user, "url": article})
+                article_like_count = get_article_like_count(article)
+                current_article_score = calculate_article_score(article_like_count, createdAt)
+                app.config['ARTICLES_COLLECTION'].update({"_id": article}, {"$set": {"score": current_article_score }})
                 return json.dumps({"status": 'Successfully removed'})
             else:
                 return json.dumps({'status':'Article not in the list'});
     else:
         flash("Login to submit a link", category="error")
         return redirect(request.args.get("login") or url_for("login"))
+
+# User liked articles personalized view
+@app.route('/<string:username>/likes')
+def user_liked_articles(username):
+    if current_user.is_authenticated() and current_user.username == username:
+        collection = 'LIKES_COLLECTION'
+        total = app.config[collection].find({"user": username}).count()
+        condition_key = "user"
+        condition_value = username 
+        try:
+            articles, articles_length, page, per_page, offset = get_articles(collection, condition_key, condition_value)
+            pagination = get_pagination(page=page, per_page=per_page, total=total, 
+                                    record_name=articles)
+            likes = app.config['USERS_COLLECTION'].find_one({"_id": current_user.username})["likes"]
+            return render_template('user_liked_articles.html', articles=articles, page=page,
+                            per_page=per_page, pagination=pagination, articles_length=articles_length, likes=likes)
+        except ValueError:        
+            total = 0
+            return render_template('category.html', total=total)
+    else:
+        return render_template('404.html'), 404     
+
+# Article score calculator
+def calculate_article_score(likes, item_hour_age):
+    gravity=1.8
+    score = (likes + 1) / pow((item_hour_age+2), gravity)
+    return int(score)
+
+# Method to get days since the article was posted to calculate the score of the article
+def calculate_article_time(datetimeformat):
+    date_format = "%Y-%m-%d %H:%M:%S"
+    time_now = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+    end_date = datetime.datetime.strptime(time_now, date_format)
+    start_date = datetime.datetime.strptime(datetimeformat, date_format)
+    hours = ((end_date - start_date).seconds) / 3600
+    return hours
+
+# Method to get the data of the requested article
+def get_article_data(article):
+    return app.config['ARTICLES_COLLECTION'].find_one({"_id": article})
+
+# Method to get article like count
+def get_article_like_count(article):
+    return app.config['LIKES_COLLECTION'].find({"url": article}).count()
