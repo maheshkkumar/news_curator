@@ -111,7 +111,7 @@ def latest():
 @app.route('/trending', methods=['GET'])
 def trending():
     collection = 'ARTICLES_COLLECTION'
-    sortby = 'score'
+    sortby = 'createdAt'
     try:
         total = get_count(collection)
         articles, articles_length, page, per_page, offset = articles_stat(collection, sortby)
@@ -158,7 +158,9 @@ def article_liked():
                 article_like_count = get_article_like_count(article)
                 article_time = calculate_article_time(createdAt)
                 current_article_score = calculate_article_score(article_like_count, article_time)
-                app.config['ARTICLES_COLLECTION'].update({"_id": article}, {"$set": {"score": current_article_score }})
+                new_like = article_like_count + 1
+                app.config['ARTICLES_COLLECTION'].update({"_id": article}, {"$set": {"score": current_article_score, 
+                    "likes": new_like}})
                 return json.dumps({'status':'OK'});
     else:
         flash("Login to submit a link", category="error")
@@ -180,7 +182,9 @@ def article_unliked():
                 app.config['LIKES_COLLECTION'].remove({"user": user, "url": article})
                 article_like_count = get_article_like_count(article)
                 current_article_score = calculate_article_score(article_like_count, createdAt)
-                app.config['ARTICLES_COLLECTION'].update({"_id": article}, {"$set": {"score": current_article_score }})
+                new_like = int(article_result["likes"]) - 1
+                app.config['ARTICLES_COLLECTION'].update({"_id": article}, {"$set": {"score": current_article_score, 
+                    "likes": new_like }})
                 return json.dumps({"status": 'Successfully removed'})
             else:
                 return json.dumps({'status':'Article not in the list'});
@@ -212,7 +216,7 @@ def user_liked_articles(username):
 # Article score calculator
 def calculate_article_score(likes, item_hour_age):
     gravity=1.8
-    score = (likes + 1) / pow((item_hour_age+2), gravity)
+    score = (likes + 1) / pow((item_hour_age + 2), gravity)
     return int(score)
 
 # Method to get days since the article was posted to calculate the score of the article
@@ -230,4 +234,4 @@ def get_article_data(article):
 
 # Method to get article like count
 def get_article_like_count(article):
-    return app.config['LIKES_COLLECTION'].find({"url": article}).count()
+    return int(app.config['LIKES_COLLECTION'].find({"url": article}).count())
