@@ -22,11 +22,17 @@ def chunks(l, n):
     return [l[i:i + n] for i in range(0, len(l), n)]
 
 # Implementation of a method to puluralize words based on count value given in the parameter
-def pularize(count, word):
-    if count < 2:
-        return str(count) + ' ' + word + ' ago'
+def pularize(count, word, category):
+    if category == "time":
+        if count < 2:
+            return str(count) + ' ' + word + ' ago'
+        else:
+            return str(count) + ' ' + word + 's ' + 'ago'
     else:
-        return str(count) + ' ' + word +'s ' + 'ago'
+        if count < 2:
+            return str(count) + ' ' + word
+        else:
+            return str(count) + ' ' + word + 's' 
 
 
 # Method to get the page items

@@ -175,6 +175,7 @@ def change_password():
 @app.template_filter()
 def datetimeformat(datetimeformat):
     date_format = "%Y-%m-%d %H:%M:%S"
+    category = "time"
     time_now = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
     end_date = datetime.datetime.strptime(time_now, date_format)
     start_date = datetime.datetime.strptime(datetimeformat, date_format)
@@ -184,18 +185,23 @@ def datetimeformat(datetimeformat):
     seconds = abs((end_date - start_date).seconds)
     if days > 0:
         if days >= 365:
-            return str(pularize(days/365, 'year'))
+            return str(pularize(days/365, 'year', category))
         elif days > 30 and days < 365:
-            return str(pularize(days/30, 'year'))
+            return str(pularize(days/30, 'year', category))
         else:
-            return str(pularize(days, 'day'))
+            return str(pularize(days, 'day', category))
     elif hours > 0:
-        return str(pularize(hours, "hour"))
+        return str(pularize(hours, "hour", category))
     else:
         if minutes > 0:
-            return str(pularize(minutes, "minute"))
+            return str(pularize(minutes, "minute", category))
         else:
-            return str(pularize(seconds, "second"))
+            return str(pularize(seconds, "second", category))
+
+# template_filter to puralize score data
+@app.template_filter()
+def puralize_points(points):
+    return pularize(points, "Point", "points")
 
 # template_filter (user_length_modifier) -> It is used to calculate the length of username
 # If the username length > 10, we modify it accordingly
