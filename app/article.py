@@ -26,7 +26,8 @@ def submit_article():
                     "description": form.description.data,
                     "category": form.category.data,
                     "user": current_user.username,
-                    "score": 0,
+                    "score": 1,
+                    "likes": 1,
                     "createdAt":  datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
                 }
 
