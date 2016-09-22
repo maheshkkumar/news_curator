@@ -195,7 +195,7 @@ def article_unliked():
 
 # User liked articles personalized view
 @app.route('/<string:username>/likes')
-def user_liked_articles(username):
+def liked_articles(username):
     if current_user.is_authenticated() and current_user.username == username:
         collection = 'LIKES_COLLECTION'
         total = app.config[collection].find({"user": username}).count()
@@ -206,7 +206,28 @@ def user_liked_articles(username):
             pagination = get_pagination(page=page, per_page=per_page, total=total, 
                                     record_name=articles)
             likes = app.config['USERS_COLLECTION'].find_one({"_id": current_user.username})["likes"]
-            return render_template('user_liked_articles.html', articles=articles, page=page,
+            return render_template('liked_articles.html', articles=articles, page=page,
+                            per_page=per_page, pagination=pagination, articles_length=articles_length, likes=likes)
+        except ValueError:        
+            total = 0
+            return render_template('category.html', total=total)
+    else:
+        return render_template('404.html'), 404     
+
+# User liked articles personalized view
+@app.route('/<string:username>/uploads')
+def uploaded_articles(username):
+    if current_user.is_authenticated() and current_user.username == username:
+        collection = 'ARTICLES_COLLECTION'
+        total = app.config[collection].find({"user": username}).count()
+        condition_key = "user"
+        condition_value = username 
+        try:
+            articles, articles_length, page, per_page, offset = get_articles(collection, condition_key, condition_value)
+            pagination = get_pagination(page=page, per_page=per_page, total=total, 
+                                    record_name=articles)
+            likes = app.config['USERS_COLLECTION'].find_one({"_id": current_user.username})["likes"]
+            return render_template('uploaded_articles.html', articles=articles, page=page,
                             per_page=per_page, pagination=pagination, articles_length=articles_length, likes=likes)
         except ValueError:        
             total = 0
