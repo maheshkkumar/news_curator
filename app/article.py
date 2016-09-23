@@ -120,8 +120,11 @@ def trending():
                                 record_name=articles)
         if current_user.is_authenticated():
             likes = app.config['USERS_COLLECTION'].find_one({"_id": current_user.username})["likes"]
+            total_likes = len(likes)
+            total_uploads = app.config['USERS_COLLECTION'].find({"user": current_user.username}).count()
             return render_template('trending.html', articles=articles, page=page,
-                                per_page=per_page, pagination=pagination, articles_length=articles_length, likes=likes)
+                                per_page=per_page, pagination=pagination, articles_length=articles_length, likes=likes, 
+                                total_likes=total_likes, total_uploads=total_uploads)
         else:
             return render_template('trending.html', articles=articles, page=page,
                                 per_page=per_page, pagination=pagination, articles_length=articles_length)

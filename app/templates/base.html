@@ -14,11 +14,13 @@
         
         <!-- Bootstrap -->
         <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='css/bootstrap.min.css') }}">
+        <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='css/bootstrap.min.css') }}">
         
         <!-- Google Font  -->
         <!-- <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"> -->
         <!-- <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans" rel="stylesheet"> -->
-        <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+        <!-- <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet"> -->
+        <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
 
         <!-- Custom Cascading Style Sheet -->
         <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='css/style.css') }}">
@@ -54,10 +56,10 @@
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ current_user.username|username_length_modifier }} <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="{{ url_for('profile', username=current_user.username) }}">Profile</a></li>
-                                    <li><a href="{{ url_for('uploaded_articles', username=current_user.username) }}">Uploads</a></li>
-                                    <li><a href="{{ url_for('liked_articles', username=current_user.username) }}">Likes</a></li>
-                                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                                    <li><a href="{{ url_for('profile', username=current_user.username) }}"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> &nbsp; Profile</a></li>
+                                    <li><a href="{{ url_for('uploaded_articles', username=current_user.username) }}"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span> &nbsp; Uploads</a></li>
+                                    <li><a href="{{ url_for('liked_articles', username=current_user.username) }}"><span class="glyphicon glyphicon-hand-right" aria-hidden="true"></span> &nbsp; Likes</a></li>
+                                    <li><a href="{{ url_for('logout') }}"><span class="glyphicon glyphicon-plane" aria-hidden="true"></span> &nbsp; Logout</a></li>
                                 </ul>
                             </li>
                         {% else %}

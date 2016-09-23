@@ -2,7 +2,24 @@
 body{
     /*font-family: 'Roboto', sans-serif;*/
     /*font-family: 'Merriweather Sans', sans-serif;*/
-    font-family: 'Montserrat', sans-serif;
+    /*font-family: 'Montserrat', sans-serif;*/
+    font-family: 'Lato', sans-serif;
+}
+
+/* User Profile Card */
+small {
+display: block;
+line-height: 1.428571429;
+color: #999;
+}
+
+#user-profile{
+    margin-top: 20%;
+}
+
+/* User Profile Name */
+#user-profile-name{
+    text-align: center;
 }
 
 /* Table article row*/
@@ -74,7 +91,7 @@ body {
     text-align: center;
 }
 
-.glyphicon-heart{
+.glyphicon-heart, .glyphicon-upload, .glyphicon-user, .glyphicon-hand-right, .glyphicon-plane{
     color: #f1c40f;
 }
 
