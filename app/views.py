@@ -208,7 +208,7 @@ def puralize_points(points):
 @app.template_filter()
 def username_length_modifier(username):
     if len(username) > 10:
-        username = str(username[:9])+".."
+        username = str(username[:9]) + ".."
         return username
     else:
         return username  
