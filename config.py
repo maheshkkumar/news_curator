@@ -48,3 +48,12 @@ CATEGORIES = [
                 ]
 
 DEBUG = True
+
+# email server
+MAIL_SERVER = 'your.mailserver.com'
+MAIL_PORT = 25
+MAIL_USERNAME = 
+MAIL_PASSWORD = None
+
+# administrator list
+ADMINS = ['you@example.com']

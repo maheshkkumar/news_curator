@@ -9,9 +9,9 @@
                 			<div class="media">	
                     			<div class="media-body" id="user-profile-name">
                     			<a id="category-type" href="{{ url_for('profile', username=current_user.username)}}"><h3 class="media-heading">{{ current_user.username }}</h3></a>
-            						<p>
-            							<span class="label label-info"><span class="glyphicon glyphicon-heart" aria-hidden="true"></span> 	<a id="category-type" href="{{ url_for('liked_articles', username=current_user.username)}}">  &nbsp;Likes {{ total_likes }}</a></span> 
-            							<span class="label label-info"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span> 	<a id="category-type" href="{{ url_for('uploaded_articles', username=current_user.username)}}">&nbsp;Uploads {{ total_uploads }}</a></span>
+            						<p id="profile-card">
+            							<span class="label"><span class="glyphicon glyphicon-heart" aria-hidden="true"></span> 	<a href="{{ url_for('liked_articles', username=current_user.username)}}">  &nbsp;Likes {{ total_likes }}</a></span> 
+            							<span class="label"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span> 	<a href="{{ url_for('uploaded_articles', username=current_user.username)}}">&nbsp;Uploads {{ total_uploads }}</a></span>
             						</p>
                     			</div>
                 			</div>

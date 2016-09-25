@@ -4,6 +4,14 @@ body{
     /*font-family: 'Merriweather Sans', sans-serif;*/
     /*font-family: 'Montserrat', sans-serif;*/
     font-family: 'Lato', sans-serif;
+
+}
+
+/* Removing border radius from all the items*/
+* {
+  -webkit-border-radius: 0 !important;
+     -moz-border-radius: 0 !important;
+          border-radius: 0 !important;
 }
 
 /* User Profile Card */
@@ -20,6 +28,15 @@ color: #999;
 /* User Profile Name */
 #user-profile-name{
     text-align: center;
+}
+
+#profile-card a{
+    padding: 5px 2px 2px 2px;
+}
+
+/* Change Password */
+#user-credentail-form a:hover{
+    color: #7f8c8d;
 }
 
 /* Table article row*/
