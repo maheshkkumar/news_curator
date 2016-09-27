@@ -121,7 +121,7 @@ def trending():
         if current_user.is_authenticated():
             likes = app.config['USERS_COLLECTION'].find_one({"_id": current_user.username})["likes"]
             total_likes = len(likes)
-            total_uploads = app.config['USERS_COLLECTION'].find({"user": current_user.username}).count()
+            total_uploads = app.config['NEWS_COLLECTION'].find({"user": current_user.username}).count()
             return render_template('trending.html', articles=articles, page=page,
                                 per_page=per_page, pagination=pagination, articles_length=articles_length, likes=likes, 
                                 total_likes=total_likes, total_uploads=total_uploads)
@@ -221,7 +221,7 @@ def liked_articles(username):
 @app.route('/<string:username>/uploads')
 def uploaded_articles(username):
     if current_user.is_authenticated() and current_user.username == username:
-        collection = 'ARTICLES_COLLECTION'
+        collection = 'NEWS_COLLECTION'
         total = app.config[collection].find({"user": username}).count()
         condition_key = "user"
         condition_value = username 
