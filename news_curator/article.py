@@ -1,4 +1,4 @@
-from app import app, lm
+from news_curator import app, lm
 from flask import request, redirect, render_template, url_for, flash
 from flask.ext.login import current_user
 from flask.ext.paginate import Pagination

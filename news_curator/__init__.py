@@ -7,4 +7,4 @@ lm = LoginManager()
 lm.init_app(app)
 lm.login_view = 'login'
 
-from app import views, article
+from news_curator import views, article
